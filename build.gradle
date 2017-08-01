@@ -1,0 +1,29 @@
+defaultTasks 'build', 'deployJar'
+
+allprojects {
+	apply plugin: 'java'
+
+	repositories {
+		mavenCentral()
+	}
+}
+
+subprojects {
+	dependencies {
+		testCompile 'junit:junit:4.11'
+	}
+}
+
+dependencies {
+	compile project(':components:storage')
+}
+
+//create a single Jar with all dependencies
+task deployJar(type: Jar) {
+	manifest {
+		attributes 'Implementation-Title': 'Gethos Cohesion Storage Jar'
+	}
+	baseName = project.name + '-deploy'
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
+}
